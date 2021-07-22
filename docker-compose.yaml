@@ -1,0 +1,43 @@
+version: '3.8'
+
+volumes:
+  postgres_data:
+    driver: local
+
+services:
+  db:
+    container_name: db
+    image: postgres:11.1
+    restart: always
+    volumes:
+    - postgres_data:/var/lib/postresql/data
+    ports:
+      - 5432:5432
+    networks:
+      - tasks-dev
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=admin
+      - POSTGRES_DB=tasks
+      - PGDATA=/var/lib/postgresql/data/pgdata
+
+  tasks-tracker:
+    container_name: tasks-tracker
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: 'no'
+    ports:
+      - 8080:8080
+    networks:
+      - tasks-dev
+    environment:
+      - 'spring.datasource.url=jdbc:postgresql://db:5432/tasks'
+    depends_on:
+      - db
+
+networks:
+  tasks-dev:
+    external: true
+    driver: bridge
+    name: 'tasks-dev'

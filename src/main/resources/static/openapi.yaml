@@ -1,0 +1,75 @@
+openapi: 3.0.1
+info:
+  title: Tasks Tracker API
+  description: 'APIs for Tasks Tracker, simple board with tasks/issues with some operation like assigning tasks, change its status, comments and watch the history of tasks.'
+  contact:
+    email: not@my.mail
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+  version: 0.0.1
+externalDocs:
+  description: Page
+  url: http://swagger.io
+servers:
+  - url: https://localhost:8080/
+tags:
+  - name: issue
+    description: All possible ways to control issues/tasks
+  - name: user
+    description: User management
+  - name: history
+    description: History of issues
+  - name: comment
+    description: Issue's comments management
+paths:
+  '/issues/{issue}':
+    get:
+      tags:
+        - issue
+      summary: Find issue by given ID
+      description: Returns a single issue if cannot be found returns null.
+      operationId: getIssue
+      parameters:
+        - name: issue
+          in: path
+          description: ID of issue
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Issue'
+
+components:
+  schemas:
+    Issue:
+      required:
+        - name
+        - id
+      type: object
+      properties:
+        id:
+          type: string
+          description: ID is generated on backend side as UUID
+        description:
+          type: string
+          description: Some description of the task
+        status:
+          $ref: '#/components/schemas/IssueStatus'
+        reason:
+          type: string
+        solverId:
+          type: string
+    IssueStatus:
+      type: string
+      enum:
+        - "OPEN"
+        - "IN_PROGRESS"
+        - "ON_HOLD"
+        - "SOLVED"
+
